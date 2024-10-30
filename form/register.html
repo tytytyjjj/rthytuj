@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <title>اهلا بيك في تكتكه</title>
+    <style>
+      body {
+        background-color: #f5f5f5;
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 10px;
+      }
+
+      .cover-container img {
+        width: 1100px;
+        display: block;
+        border-radius: 10px;
+        margin: 0 auto 10px;
+      }
+
+      .form-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        flex-grow: 1;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 5px;
+        }
+        .cover-container img {
+          width: 100%;
+        }
+      }
+
+      .button {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .notification {
+        display: none;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .is-danger {
+        background-color: #ff3860;
+        color: white;
+      }
+
+      .is-success {
+        background-color: #23d160;
+        color: white;
+      }
+
+      .is-warning {
+        background-color: #ffdd57;
+        color: #363636;
+      }
+
+      footer {
+        background-color: #1a1736;
+        text-align: center;
+        padding: 10px 0;
+        color: white;
+      }
+
+      .button.is-primary {
+        width: 100%;
+        padding: 10px;
+        background-color: #6236a9;
+        color: white;
+        border: none;
+      }
+
+      .button.is-primary:hover {
+        background-color: #512b89;
+      }
+    </style>
+
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- الكفر داخل بوردر -->
+    <div class="cover-container">
+      <div class="cover">
+        <img src="assets/images/cover/cover.jpeg" alt="Cover Image" />
+      </div>
+    </div>
+
+    <!-- الفورم -->
+    <div class="container form-container">
+      <form id="form" method="POST">
+        <div class="field">
+          <label class="label">Name</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter Your Name"
+              name="Name"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">WhatsApp Number</label>
+          <div class="control">
+            <input
+              class="input"
+              type="tel"
+              placeholder="Enter Your WhatsApp Number"
+              name="WhatsApp Number"
+              pattern="[0-9]{11}"
+              title="Please enter a valid 11-digit WhatsApp number"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">ID National Number</label>
+          <div class="control">
+            <input
+              class="input"
+              type="tel"
+              placeholder="Enter ID National Number"
+              name="ID National Number"
+              pattern="[0-9]{14}"
+              title="Please enter a valid 14-digit national ID number"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Email</label>
+          <div class="control">
+            <input
+              class="input"
+              type="email"
+              placeholder="Enter Your Email"
+              name="Email"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Education Profile</label>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="Education Profile" value="Student" /> Student
+            </label>
+            <label class="radio">
+              <input type="radio" name="Education Profile" value="Graduate"  required /> Graduate
+            </label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">University and College</label>
+          <div class="control">
+            <input
+              class="input"
+              type="text"
+              placeholder="Enter Your University and College"
+              name="University and College"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Age</label>
+          <div class="control">
+            <input
+              class="input"
+              type="number"
+              placeholder="Enter your age"
+              name="Age"
+              min="16"
+              max="100"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Gender</label>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="Gender" value="male" /> Male
+            </label>
+            <label class="radio">
+              <input type="radio" required  name="Gender" value="female" /> Female
+            </label>
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-primary is-rounded" type="submit" id="submit-button">
+              Submit
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div
+        id="message"
+        style="
+          display: none;
+          margin: 20px;
+          font-weight: bold;
+          color: green;
+          padding: 8px;
+          background-color: beige;
+          border-radius: 4px;
+          border-color: aquamarine;
+        "
+      ></div>
+    </div>
+
+    <script>
+      document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const messageElement = document.getElementById("message");
+        const submitButton = document.getElementById("submit-button");
+        messageElement.textContent = "";
+        messageElement.style.display = "block";
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+        var formData = new FormData(this);
+        var keyValuePairs = [];
+        for (var pair of formData.entries()) {
+          keyValuePairs.push(pair[0] + "=" + encodeURIComponent(pair[1]));
+        }
+        var formDataString = keyValuePairs.join("&");
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbwxuE5TMofwBHqCmF36a_HRXDQhnEhfaXSnZrLLHuxUnPjDT1CGEKLskezrgZNSxMHL/exec",
+          {
+            redirect: "follow",
+            method: "POST",
+            body: formDataString,
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            },
+          }
+        )
+          .then(function (response) {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Failed to submit the form.");
+            }
+          })
+          .then(function (data) {
+            window.location.href = "thanks";
+            messageElement.textContent = "Data submitted successfully!";
+            messageElement.style.backgroundColor = "";
+            submitButton.disabled = false;
+            submitButton.innerHTML = "Submit";
+            document.getElementById("form").reset();
+          })
+          .catch(function (error) {
+            messageElement.textContent = "An error occurred. Please try again later.";
+            messageElement.style.backgroundColor = "";
+            submitButton.disabled = false;
+            submitButton.innerHTML = "Submit";
+          });
+      });
+    </script>
+	
+	
+    <footer>
+      <a href="https://illustrav.com" target="_blank" style="color: white; text-decoration: none;">
+        © 2024 All Copy Rights Reserved To IllustraV
+      </a>
+    </footer>
+  </body>
+</html>
