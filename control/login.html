@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+
+    <!-- ===== BOX ICONS ===== -->
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+
+    <title>Login</title>
+</head>
+<body>
+    <div class="login">
+        <div class="login__content">
+            <div class="login__img">
+                <img src="assets/img/img-login.svg" alt="">
+            </div>
+
+            <div class="login__forms">
+                <form action="" class="login__registre" id="login-in">
+                    <h1 class="login__title">Login In</h1>
+
+                    <div class="login__box">
+                        <i class='bx bx-user login__icon'></i>
+                        <input type="text" placeholder="Username" class="login__input" required>
+                    </div>
+
+                    <div class="login__box">
+                        <i class='bx bx-lock-alt login__icon'></i>
+                        <input type="password" placeholder="Password" class="login__input" required>
+                    </div>
+
+                    <!-- زر تسجيل الدخول -->
+                    <a href="#" class="login__button" id="signInButton">Sign In</a>
+
+                    <!-- سيتم إضافة رسالة الخطأ هنا بواسطة JavaScript -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--===== MAIN JS =====-->
+    <script>
+        const users = [
+            { username: "tiva", password: "123", sessionKey: "admin-session-12345", page: "admin/admin-dashboard" },
+            { username: "tiva1", password: "123", sessionKey: "user-session-creativa67890", page: "user/creativa/event" },
+        ];
+
+        // استمع لحدث submit على الفورم
+        document.getElementById("login-in").addEventListener("submit", function(event) {
+            event.preventDefault();
+            validateLogin();
+        });
+
+        // استمع لحدث click على زر تسجيل الدخول
+        document.getElementById("signInButton").addEventListener("click", function(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+            validateLogin();
+        });
+
+        // دالة التحقق من بيانات الدخول
+        function validateLogin() {
+            const username = document.querySelectorAll(".login__input")[0].value;
+            const password = document.querySelectorAll(".login__input")[1].value;
+
+            // إزالة أي رسالة خطأ سابقة
+            let errorMessage = document.querySelector(".error-message");
+            if (errorMessage) {
+                errorMessage.remove();
+            }
+
+            // التحقق من صحة بيانات الدخول
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                // إذا كانت البيانات صحيحة، تخزين الـ sessionKey وإعادة التوجيه
+                localStorage.setItem("LOGIN_SESSION", user.sessionKey);
+                window.location.href = user.page;
+            } else {
+                // إذا كانت البيانات غير صحيحة، عرض رسالة خطأ
+                errorMessage = document.createElement("div");
+                errorMessage.classList.add("error-message");
+                errorMessage.textContent = "Incorrect username or password. Please try again.";
+                document.querySelector(".login__registre").appendChild(errorMessage);
+            }
+        }
+
+        // استمع لحدث keypress على المدخلات للسماح باستخدام مفتاح Enter
+        document.querySelectorAll(".login__input").forEach(input => {
+            input.addEventListener("keypress", function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // منع إعادة تحميل الصفحة
+                    validateLogin(); // استدعاء دالة التحقق
+                }
+            });
+        });
+    </script>
+	
+	
+	<footer style="position: fixed; bottom: 0; width: 100%; background-color: #1A1736; text-align: center; padding: 10px 0; color: white;">
+  <a href="https://illustrav.com" target="_blank" style="color: white; text-decoration: none;">
+    © 2024 All Copy Rights Reserved To IllustraV
+  </a>
+</footer>
+</body>
+</html>

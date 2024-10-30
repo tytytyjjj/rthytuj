@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Data</title>
+  <style>
+    /* Splash screen */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      visibility: visible;
+      transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+      opacity: 1;
+    }
+    #splash-screen.hidden {
+      visibility: hidden;
+      opacity: 0;
+    }
+    #splash-screen img {
+      width: 150px; /* Logo size */
+      margin-bottom: 20px;
+    }
+    #splash-screen p {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      color: #333;
+    }
+
+    /* Logo */
+    #logo {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    #logo img {
+      max-width: 150px;
+      height: 150px;
+    }
+
+    /* Table design */
+    .table-container {
+      max-height: 400px; /* Fixed height */
+      overflow-y: auto; /* Vertical scrolling */
+      display: block; /* Make table a block to enable scrolling */
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      font-family: Arial, sans-serif;
+      min-width: 100px; /* Minimum cell width */
+    }
+    th {
+      background-color: #6236A9;
+      color: white;
+      cursor: pointer; /* Change cursor on hover */
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    /* Button */
+    button {
+      padding: 10px 20px;
+      background-color: #6236A9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: inline-block; /* Inline block to align with search */
+      font-family: Arial, sans-serif;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-right: 10px; /* Space between button and search */
+    }
+    button:hover {
+      background-color: #1A1736;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 10px;
+      background-color: #333333;
+      color: white;
+      font-family: Arial, sans-serif;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      table, th, td {
+        font-size: 14px;
+      }
+    }
+
+    /* Search box design */
+    #search-wrapper {
+      display: flex;
+      justify-content: flex-start; /* Align to left */
+      margin: 20px 0;
+      align-items: center; /* Align items vertically */
+    }
+    #search-container {
+      display: flex;
+      align-items: center; /* Vertical alignment */
+      border: 1px solid #ddd;
+      border-radius: 20px; /* Rounded corners */
+      background-color: #f9f9f9; /* Background color */
+      overflow: hidden; /* Hide excess edges */
+    }
+    #column-select, #search-input {
+      padding: 10px;
+      font-family: Arial, sans-serif;
+      border: none; /* Remove border */
+      outline: none; /* Remove border on focus */
+      transition: border-color 0.3s;
+    }
+    #column-select {
+      background-color: #f9f9f9; /* Background color for select */
+      border-radius: 20px 0 0 20px; /* Rounded corners */
+    }
+    #search-input {
+      width: 200px; /* Larger width for search box */
+      border-radius: 0 20px 20px 0; /* Rounded corners */
+    }
+    #search-input:focus, #column-select:focus {
+      border-color: #6236A9; /* Border color on focus */
+      box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); /* Add shadow */
+    }
+
+    /* Row count design */
+    #row-count {
+      padding: 10px 20px;
+      background-color: #6236A9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: inline-block; /* Inline block to align with search */
+      font-family: Arial, sans-serif;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      margin-right: 10px; /* Space between button and search */
+    }
+	
+
+/* Confirmation modal */
+#delete-confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1000;
+}
+
+#delete-confirmation p {
+  font-family: Arial, sans-serif;
+  margin-bottom: 20px;
+}
+
+#delete-confirmation button {
+  padding: 10px 20px;
+  margin: 0 10px;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+}
+
+	
+	
+#loading-spinner {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Splash screen -->
+  <div id="splash-screen">
+    <img src="../../../assets/images/logos/creativa.png" alt="creativa">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Logo -->
+  <div id="logo">
+    <img src="../../../assets/images/logos/creativa.png" alt="creativa">
+  </div>
+
+  <!-- Search box -->
+  <div id="search-wrapper">
+    <div id="search-container">
+      <select id="column-select">
+        <option value="all">All Columns</option>
+        <option value="1">Sequence</option>
+        <!-- Column options will be added here -->
+      </select>
+      <input type="text" id="search-input" placeholder="Search in data...">
+      <span id="search-icon">🔍</span>
+    </div>
+    <button onclick="exportToCSV()">Download</button> <!-- Align button with search -->
+	
+  </div>
+
+  <!-- Row count display -->
+  <div id="row-count">Total Rows: 0</div> <!-- Total rows count -->
+    <button onclick="clearTable()"    style="background-color: #AB8ED2; color: white;">Clear Table</button>
+
+  <!-- Title and table -->
+  <div class="table-container">
+    <table id="data-table">
+      <thead>
+        <tr id="table-headers">
+          <th>Sequence</th> <!-- Sequence column -->
+          <!-- Column headers will be added here -->
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Data will be added here -->
+      </tbody>
+    </table>
+  </div>
+
+
+<div id="loading-spinner" style="display:none;">Loading...</div>
+
+<div id="overlay"></div>
+<div id="delete-confirmation">
+  <p>Are you sure you want to clear the data?</p>
+  <button  onclick="confirmDelete()"  style="background-color: #AB8ED2; color: white;">Yes</button>
+  <button onclick="cancelDelete()">No</button>
+</div>
+
+
+  <!-- Footer -->
+<footer style="position: fixed; bottom: 0; width: 100%; background-color: #1A1736; text-align: center; padding: 10px 0; color: white;">
+  <a href="https://illustrav.com" target="_blank" style="color: white; text-decoration: none;">
+    © 2024 All Copy Rights Reserved To IllustraV
+  </a>
+</footer>
+<script>
+    const sessionKey = "admin-session-12345"; // نفس القيمة الفريدة المستخدمة في صفحة تسجيل الدخول
+
+    window.onload = function() {
+        // التحقق إذا كان المستخدم مسجلاً دخوله
+        if (localStorage.getItem("LOGIN_SESSION") !== sessionKey) {
+            // إعادة التوجيه إلى صفحة تسجيل الدخول إذا لم يكن المستخدم مسجلاً دخوله
+            window.location.href = "../../../login"; // استبدل admin-login باسم ملف تسجيل الدخول
+        } else {
+            // عرض شاشة التحميل
+            document.getElementById('splash-screen').classList.remove('hidden');
+            
+            // إخفاء شاشة التحميل بعد 3 ثواني
+            setTimeout(function() {
+                document.getElementById('splash-screen').classList.add('hidden');
+                // بدء العد التنازلي لتسجيل الخروج بعد دقيقتين
+                setTimeout(logout, 900000); // 120000 مللي ثانية = 2 دقيقة
+            }, 4000); // إخفاء بعد 3 ثواني
+        }
+    };
+
+    function logout() {
+        // إزالة حالة تسجيل الدخول
+        localStorage.removeItem("LOGIN_SESSION");
+        // إعادة التوجيه إلى صفحة تسجيل الدخول
+        window.location.href = "../../../login"; // استبدل admin-login باسم ملف تسجيل الدخول
+    }
+</script>
+
+  <script>
+
+    // Fetch data from Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbwxuE5TMofwBHqCmF36a_HRXDQhnEhfaXSnZrLLHuxUnPjDT1CGEKLskezrgZNSxMHL/exec')
+      .then(response => response.json())
+      .then(data => {
+        // Display data in the table
+        const headers = data[0]; // Headers
+        const rows = data.slice(1); // Data rows
+
+        // Add headers to the table
+        const headersRow = document.getElementById('table-headers');
+        headers.forEach((header, index) => {
+          const th = document.createElement('th');
+          th.textContent = header;
+          th.onclick = () => sortTable(index + 1); // Adjust index for sorting
+          headersRow.appendChild(th);
+          
+          // Add column options
+          const columnSelect = document.getElementById('column-select');
+          const option = document.createElement('option');
+          option.value = index + 2; // Set option value to column index + 1
+          option.textContent = header; // Option text
+          columnSelect.appendChild(option);
+        });
+
+        // Add data to the table
+        const tableBody = document.getElementById('table-body');
+        rows.forEach((row, index) => {
+          const tr = document.createElement('tr');
+          
+          // Add sequence number
+          const tdIndex = document.createElement('td');
+          tdIndex.textContent = index + 1; // Add sequence number
+          tr.appendChild(tdIndex);
+
+          row.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+
+        // Update total row count
+        document.getElementById('row-count').textContent = `Total Rows: ${rows.length}`;
+      });
+
+    // Search function
+    document.getElementById('search-input').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const selectedColumn = document.getElementById('column-select').value;
+      const tableBody = document.getElementById('table-body');
+      const rows = Array.from(tableBody.getElementsByTagName('tr'));
+
+      rows.forEach(row => {
+        const cells = Array.from(row.getElementsByTagName('td'));
+        const shouldShow = selectedColumn === 'all'
+          ? cells.some(cell => cell.textContent.toLowerCase().includes(query))
+          : cells[selectedColumn - 1].textContent.toLowerCase().includes(query);
+        row.style.display = shouldShow ? '' : 'none';
+      });
+    });
+
+    // Sorting function
+    function sortTable(columnIndex) {
+      const tableBody = document.getElementById('table-body');
+      const rows = Array.from(tableBody.getElementsByTagName('tr'));
+
+      rows.sort((a, b) => {
+        const aText = a.getElementsByTagName('td')[columnIndex - 1].textContent;
+        const bText = b.getElementsByTagName('td')[columnIndex - 1].textContent;
+
+        return aText.localeCompare(bText);
+      });
+
+      // Remove current rows
+      while (tableBody.firstChild) {
+        tableBody.removeChild(tableBody.firstChild);
+      }
+
+      // Append sorted rows
+      rows.forEach(row => tableBody.appendChild(row));
+    }
+
+// Export to CSV with UTF-8 encoding
+function exportToCSV() {
+  const rows = Array.from(document.querySelectorAll('#data-table tr'));
+  const csvContent = rows.map(row => {
+    const cols = Array.from(row.querySelectorAll('td, th'));
+    return cols.map(col => `"${col.textContent.replace(/"/g, '""')}"`).join(',');
+  }).join('\n');
+
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'data.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
+
+
+function clearTable() {
+  // Show confirmation popup
+  document.getElementById('delete-confirmation').style.display = 'block';
+  document.getElementById('overlay').style.display = 'block';
+}
+
+function confirmDelete() {
+  fetch('https://script.google.com/macros/s/AKfycbwxuE5TMofwBHqCmF36a_HRXDQhnEhfaXSnZrLLHuxUnPjDT1CGEKLskezrgZNSxMHL/exec?action=clearSheetData')
+    .then(response => response.json())
+    .then(data => {
+      if (data.result === 'success') {
+        alert('Data cleared successfully!');
+        // Hide confirmation popup
+        document.getElementById('delete-confirmation').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+		window.location.reload();
+      } else {
+        alert('Failed to clear data.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while clearing data.');
+    });
+}
+
+function cancelDelete() {
+  // Hide confirmation popup
+  document.getElementById('delete-confirmation').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+  
+}
+
+function confirmDelete() {
+  // إخفاء رسالة التأكيد وإظهار علامة التحميل
+  document.getElementById('delete-confirmation').style.display = 'none';
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('loading-spinner').style.display = 'block';
+
+  fetch('https://script.google.com/macros/s/AKfycbwxuE5TMofwBHqCmF36a_HRXDQhnEhfaXSnZrLLHuxUnPjDT1CGEKLskezrgZNSxMHL/exec?action=clearSheetData')
+    .then(response => response.json())
+    .then(data => {
+      if (data.result === 'success') {
+        alert('Data cleared successfully!');
+        // إخفاء علامة التحميل بعد النجاح
+        document.getElementById('loading-spinner').style.display = 'none';
+        // إعادة تحميل الصفحة
+        window.location.reload();
+      } else {
+        alert('Failed to clear data.');
+        // إخفاء علامة التحميل بعد الفشل
+        document.getElementById('loading-spinner').style.display = 'none';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while clearing data.');
+      // إخفاء علامة التحميل عند حدوث خطأ
+      document.getElementById('loading-spinner').style.display = 'none';
+    });
+}
+
+  </script>
+  
+  
+  
+  
+</body>
+</html>
